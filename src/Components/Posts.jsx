@@ -23,10 +23,11 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
+
 export default function Posts() {
   const { currentUser } = useAuth();
   const [posts, setPosts] = useState([]);
-  const [commentText, setCommentText] = useState("");
+  const [commentTexts, setCommentTexts] = useState({}); // Changed to handle individual post comments
   const [comments, setComments] = useState({});
 
   useEffect(() => {
@@ -95,6 +96,7 @@ export default function Posts() {
 
   const handleAddComment = async (postId) => {
     try {
+      const commentText = commentTexts[postId] || "";
       if (commentText.trim() === "") return;
       const comment = {
         userId: currentUser.uid,
@@ -104,10 +106,14 @@ export default function Posts() {
         createdAt: Timestamp.fromDate(new Date()),
       };
       await addDoc(collection(db, "posts", postId, "comments"), comment);
-      setCommentText("");
+      setCommentTexts((prev) => ({ ...prev, [postId]: "" }));
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
+  };
+
+  const handleCommentChange = (postId, event) => {
+    setCommentTexts((prev) => ({ ...prev, [postId]: event.target.value }));
   };
 
   return (
@@ -178,8 +184,8 @@ export default function Posts() {
           {currentUser && (
             <div className="mt-4">
               <textarea
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
+                value={commentTexts[post.id] || ""}
+                onChange={(e) => handleCommentChange(post.id, e)}
                 className="w-full p-2 border border-gray-300 rounded mb-2"
                 placeholder="Add a comment"
               ></textarea>
@@ -195,14 +201,17 @@ export default function Posts() {
             <h3 className="text-lg font-bold mb-2">Comments</h3>
             {comments[post.id] && comments[post.id].length > 0 ? (
               comments[post.id].map((comment) => (
-                <div key={comment.id} className="mb-2 flex items-start">
+                <div
+                  key={comment.id}
+                  className="mb-2 flex items-start mt-4 border-t-2"
+                >
                   <img
                     src={comment.photoURL}
                     alt="Profile"
-                    className="w-8 h-8 rounded-full mr-2"
+                    className="w-8 h-8 rounded-full mr-2 mt-4"
                   />
                   <div>
-                    <p className="text-sm font-semibold">
+                    <p className="text-sm font-semibold mt-4">
                       {comment.displayName} -{" "}
                       {comment.createdAt.toDate().toLocaleDateString()}
                     </p>
