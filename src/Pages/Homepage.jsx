@@ -9,7 +9,7 @@ export default function Homepage() {
     <div className="bg-gray-100 min-h-screen relative">
       <main className="container mx-auto flex flex-col md:flex-row mt-6 px-4 md:px-0">
         {/* Sidebar */}
-        <aside className="w-full md:w-1/2 lg:w-1/4 bg-white p-6 rounded-lg shadow-md mb-6 md:mb-0 h-fit">
+        <aside className="w-full md:w-1/2 lg:w-1/4 bg-white p-6 rounded-lg shadow-md lg:ml-8 mb-6 md:mb-0 h-fit">
           <div className="text-center mb-4">
             <img
               src="/venture-1-logo-png-transparent.png"
@@ -28,7 +28,7 @@ export default function Homepage() {
         </aside>
 
         {/* Main Content */}
-        <section className="w-full md:1/2 base:w-2/4 lg:w-3/5 md:ml-16 flex flex-col items-center">
+        <section className="w-full md:1/2 base:w-2/4 lg:w-2/4 md:ml-16 m-auto flex flex-col items-center">
           <div className="w-full max-w-5xl">
             <Posts />
           </div>

@@ -1,29 +1,3 @@
-// import "./App.css";
-// import { Routes, Route } from "react-router-dom";
-// import Navbar from "./Components/Navbar";
-// import Homepage from "./Pages/Homepage";
-// import Login from "./Pages/Login";
-// import Register from "./Pages/Register";
-// import AddPost from "./Pages/AddPost";
-// import { AuthProvider } from "./contexts/authContext";
-// import EditPost from "./Pages/EditPost";
-
-// function App() {
-//   return (
-//     <AuthProvider>
-//       <Navbar />
-//       <Routes>
-//         <Route path="/" element={<Homepage />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/register" element={<Register />} />
-//         <Route path="/addpost" element={<AddPost />} />
-//         <Route path="/editpost/:id" element={<EditPost />} />
-//       </Routes>
-//     </AuthProvider>
-//   );
-// }
-
-// export default App;
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./Components/Navbar";

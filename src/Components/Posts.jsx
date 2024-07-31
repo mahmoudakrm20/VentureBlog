@@ -27,8 +27,12 @@ import { faComment } from "@fortawesome/free-regular-svg-icons";
 export default function Posts() {
   const { currentUser } = useAuth();
   const [posts, setPosts] = useState([]);
-  const [commentTexts, setCommentTexts] = useState({}); // Changed to handle individual post comments
+  const [commentTexts, setCommentTexts] = useState({});
   const [comments, setComments] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 5;
+  const defaultProfilePhoto =
+    "/if-traveling-icon-flat-outline08-3405109_107381.webp";
 
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -101,7 +105,7 @@ export default function Posts() {
       const comment = {
         userId: currentUser.uid,
         displayName: currentUser.displayName,
-        photoURL: currentUser.photoURL,
+        photoURL: currentUser.photoURL || defaultProfilePhoto,
         text: commentText,
         createdAt: Timestamp.fromDate(new Date()),
       };
@@ -116,9 +120,27 @@ export default function Posts() {
     setCommentTexts((prev) => ({ ...prev, [postId]: event.target.value }));
   };
 
+  const paginatePosts = () => {
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    return posts.slice(indexOfFirstPost, indexOfLastPost);
+  };
+
+  const nextPage = () => {
+    if (currentPage < Math.ceil(posts.length / postsPerPage)) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4">
-      {posts.map((post) => (
+      {paginatePosts().map((post) => (
         <article
           key={post.id}
           className="bg-white p-6 rounded-lg shadow-md mb-6 overflow-hidden"
@@ -126,12 +148,12 @@ export default function Posts() {
           <img
             src={post.imgUrl}
             alt="Post Image"
-            className="w-full h-96 rounded-lg object-cover mb-4"
+            className="w-full h-64 md:h-80 lg:h-96 rounded-lg object-fit mb-4"
           />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
               <img
-                src={post.photoURL}
+                src={post.photoURL || defaultProfilePhoto}
                 alt="Profile"
                 className="w-10 h-10 rounded-full mr-2"
               />
@@ -206,7 +228,7 @@ export default function Posts() {
                   className="mb-2 flex items-start mt-4 border-t-2"
                 >
                   <img
-                    src={comment.photoURL}
+                    src={comment.photoURL || defaultProfilePhoto}
                     alt="Profile"
                     className="w-8 h-8 rounded-full mr-2 mt-4"
                   />
@@ -225,6 +247,28 @@ export default function Posts() {
           </div>
         </article>
       ))}
+      <div className="flex justify-between mt-4">
+        <button
+          onClick={prevPage}
+          className={`bg-gray-500 text-white p-2 rounded mb-2 hover:bg-blue-600 ${
+            currentPage === 1 ? "opacity-50" : ""
+          }`}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <button
+          onClick={nextPage}
+          className={`bg-gray-500 text-white p-2 rounded mb-2 hover:bg-blue-600 ${
+            currentPage === Math.ceil(posts.length / postsPerPage)
+              ? "opacity-50"
+              : ""
+          }`}
+          disabled={currentPage === Math.ceil(posts.length / postsPerPage)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

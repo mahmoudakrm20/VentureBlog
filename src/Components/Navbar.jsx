@@ -6,10 +6,14 @@ import { useState, useEffect } from "react";
 export default function Navbar() {
   const { userLoggedIn, currentUser } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState(currentUser?.photoURL);
+  const defaultProfilePhoto =
+    "/if-traveling-icon-flat-outline08-3405109_107381.webp";
 
   useEffect(() => {
     if (currentUser?.photoURL) {
       setProfilePhoto(currentUser.photoURL);
+    } else {
+      setProfilePhoto(defaultProfilePhoto);
     }
   }, [currentUser]);
 
@@ -30,13 +34,11 @@ export default function Navbar() {
         <nav className="flex items-center space-x-6">
           {userLoggedIn ? (
             <>
-              {profilePhoto && (
-                <img
-                  src={profilePhoto}
-                  alt="User profile"
-                  className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md"
-                />
-              )}
+              <img
+                src={profilePhoto}
+                alt="User profile"
+                className="w-10 h-10 rounded-full border-2 border-gray-300 shadow-md"
+              />
               <span className="text-base font-medium text-gray-800 ml-3 font-sans">
                 {currentUser?.displayName}
               </span>
