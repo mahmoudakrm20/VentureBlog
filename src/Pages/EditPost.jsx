@@ -63,45 +63,52 @@ const EditPost = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
-      <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2">
-          Image Upload
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        {imgUrl && !file && (
-          <img
-            src={imgUrl}
-            alt="Current Post"
-            className="w-full h-48 object-cover mt-2 rounded"
-          />
-        )}
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2">
-          Post Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-      </div>
-      <button
-        type="submit"
-        className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${
-          uploading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        disabled={uploading}
+    <main className="w-full h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md p-8 bg-white shadow-lg border rounded-xl space-y-6"
       >
-        {uploading ? "Updating..." : "Update Post"}
-      </button>
-    </form>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Image Upload
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:border-blue-500 transition duration-300"
+          />
+          {imgUrl && !file && (
+            <img
+              src={imgUrl}
+              alt="Current Post"
+              className="w-full h-48 object-cover mt-2 rounded-lg"
+            />
+          )}
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Post Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:border-blue-500 transition duration-300"
+          />
+        </div>
+        <button
+          type="submit"
+          className={`w-full px-4 py-2 text-white font-semibold rounded-lg ${
+            uploading
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 transform active:scale-95"
+          }`}
+          disabled={uploading}
+        >
+          {uploading ? "Updating..." : "Update Post"}
+        </button>
+      </form>
+    </main>
   );
 };
 

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 import { doSignOut } from "../firebase/auth";
 import { useState, useEffect } from "react";
-
 export default function Navbar() {
   const { userLoggedIn, currentUser } = useAuth();
   const [profilePhoto, setProfilePhoto] = useState(currentUser?.photoURL);
@@ -26,7 +25,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="bg-white shadow-md py-4 z-50">
+    <header className="bg-white shadow-md top-0 py-4 z-50 fixed w-full">
       <div className="container mx-auto flex justify-between items-center px-6 md:px-8">
         <h1 className="text-4xl font-semibold text-gray-800 cursor-pointer font-serif">
           <Link to="/">Venture</Link>

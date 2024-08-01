@@ -56,56 +56,62 @@ const AddPost = () => {
 
   if (!userLoggedIn) {
     return (
-      <div className="bg-white mt-1 p-6 rounded-lg shadow-md text-center">
-        <p className="text-gray-700 font-bold mb-4">
-          You need to be logged in to post.
-        </p>
-        <Link
-          to="/login"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Go to Login
-        </Link>
-      </div>
+      <main className="w-full h-screen flex items-center justify-center bg-gray-100">
+        <div className="w-full max-w-md p-8 bg-white shadow-lg border rounded-xl space-y-6 text-center">
+          <p className="text-gray-800 font-bold text-xl mb-4">
+            You need to be logged in to post.
+          </p>
+          <Link
+            to="/login"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </main>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white p-6 mt-1 rounded-lg shadow-md"
-    >
-      <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2">
-          Image Upload
-        </label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 font-bold mb-2">
-          Post Description
-        </label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-      </div>
-      <button
-        type="submit"
-        className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-600 ${
-          uploading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        disabled={uploading}
+    <main className="w-full h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md p-8 bg-white shadow-lg border rounded-xl space-y-6"
       >
-        {uploading ? "Uploading..." : "Add Post"}
-      </button>
-    </form>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Image Upload
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:border-blue-500 transition duration-300"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-2">
+            Post Description
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg focus:border-blue-500 transition duration-300"
+          />
+        </div>
+        <button
+          type="submit"
+          className={`w-full px-4 py-2 text-white font-semibold rounded-lg ${
+            uploading
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-transform duration-150 transform active:scale-95"
+          }`}
+          disabled={uploading}
+        >
+          {uploading ? "Uploading..." : "Add Post"}
+        </button>
+      </form>
+    </main>
   );
 };
 
