@@ -129,14 +129,14 @@ export default function Posts() {
   const nextPage = () => {
     if (currentPage < Math.ceil(posts.length / postsPerPage)) {
       setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top smoothly
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to the top smoothly
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
