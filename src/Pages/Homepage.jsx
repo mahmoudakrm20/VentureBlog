@@ -1,7 +1,6 @@
 import { useAuth } from "../contexts/authContext";
 import { Link } from "react-router-dom";
 import Posts from "../Components/Posts";
-
 export default function Homepage() {
   const { userLoggedIn } = useAuth();
 
@@ -37,7 +36,7 @@ export default function Homepage() {
       {userLoggedIn && (
         <Link
           to="/addpost"
-          className="fixed bottom-6 right-6 bg-blue-500 text-white flex items-center justify-center w-16 h-16 rounded-full shadow-lg text-3xl hover:bg-blue-600 transition duration-300 transform hover:scale-105 active:scale-95"
+          className="fixed bottom-14 right-6 md:right-14 bg-blue-500 text-white flex items-center justify-center w-16 h-16 rounded-full shadow-lg text-3xl hover:bg-blue-600 transition duration-300 transform hover:scale-105 active:scale-95"
         >
           +
         </Link>
