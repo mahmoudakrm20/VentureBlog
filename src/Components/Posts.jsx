@@ -150,7 +150,7 @@ export default function Posts() {
           <img
             src={post.imgUrl}
             alt="Post Image"
-            className="w-full h-64 md:h-80 lg:h-96 rounded-lg object-fit mb-4"
+            className="w-full h-64 md:h-80 lg:h-96 rounded-lg object-cover object-center mb-4"
           />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
