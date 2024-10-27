@@ -23,6 +23,7 @@ import {
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
+import ConfirmationModal from "./ConfirmationModal";
 
 export default function Posts() {
   const { currentUser } = useAuth();
@@ -33,6 +34,18 @@ export default function Posts() {
   const postsPerPage = 5;
   const defaultProfilePhoto =
     "/if-traveling-icon-flat-outline08-3405109_107381.webp";
+
+  // States for full-screen modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  // States for confirmation modal
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState({
+    type: "",
+    id: "",
+    postId: "",
+  });
 
   useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
@@ -70,12 +83,38 @@ export default function Posts() {
     return unsubscribe;
   };
 
-  const handleDelete = async (postId) => {
-    try {
-      await deleteDoc(doc(db, "posts", postId));
-    } catch (error) {
-      console.error("Error deleting post: ", error);
+  const handleDeletePost = async (postId) => {
+    // Open confirmation modal for post deletion
+    setItemToDelete({ type: "post", id: postId });
+    setIsConfirmationOpen(true);
+  };
+
+  const handleDeleteComment = async (postId, commentId) => {
+    // Open confirmation modal for comment deletion
+    setItemToDelete({ type: "comment", id: commentId, postId: postId });
+    setIsConfirmationOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (itemToDelete.type === "post") {
+      try {
+        await deleteDoc(doc(db, "posts", itemToDelete.id));
+      } catch (error) {
+        console.error("Error deleting post: ", error);
+      }
+    } else if (itemToDelete.type === "comment") {
+      try {
+        await deleteDoc(
+          doc(db, "posts", itemToDelete.postId, "comments", itemToDelete.id)
+        );
+      } catch (error) {
+        console.error("Error deleting comment: ", error);
+      }
     }
+
+    // Close confirmation modal
+    setIsConfirmationOpen(false);
+    setItemToDelete({ type: "", id: "", postId: "" });
   };
 
   const handleLike = async (postId) => {
@@ -140,6 +179,18 @@ export default function Posts() {
     }
   };
 
+  // Function to handle image click to open modal
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage("");
+  };
+
   return (
     <div className="container mx-auto px-4">
       {paginatePosts().map((post) => (
@@ -150,7 +201,8 @@ export default function Posts() {
           <img
             src={post.imgUrl}
             alt="Post Image"
-            className="w-full h-64 md:h-80 lg:h-96 rounded-lg object-cover object-center mb-4"
+            className="w-full h-64 md:h-80 lg:h-96 rounded-lg object-cover object-center mb-4 cursor-pointer"
+            onClick={() => openModal(post.imgUrl)} // Handle image click
           />
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
@@ -168,61 +220,51 @@ export default function Posts() {
             </div>
             {currentUser && post.userId === currentUser.uid && (
               <div className="flex items-center space-x-4">
-                <Link
-                  to={`/editpost/${post.id}`}
-                  className="flex items-center justify-center bg-gray-500 text-white p-2 rounded-full hover:bg-blue-600 transition duration-300"
-                >
-                  <FontAwesomeIcon icon={faPenToSquare} size="lg" />
+                <Link to={`/edit/${post.id}`}>
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    className="text-blue-600 cursor-pointer"
+                  />
                 </Link>
-
-                <button
-                  onClick={() => handleDelete(post.id)}
-                  className="flex items-center justify-center bg-gray-500 text-white p-2 rounded-full hover:bg-red-600 transition duration-300"
-                >
-                  <FontAwesomeIcon icon={faTrash} size="lg" />
-                </button>
+                <FontAwesomeIcon
+                  icon={faTrash}
+                  className="text-red-600 cursor-pointer"
+                  onClick={() => handleDeletePost(post.id)} // Call delete function
+                />
               </div>
             )}
           </div>
-          <p className="text-gray-700 mb-4 break-words">{post.description}</p>
-          <div className="flex items-center space-x-4">
-            {currentUser && (
-              <button onClick={() => handleLike(post.id)}>
-                {post.likes && post.likes.includes(currentUser.uid) ? (
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    size="lg"
-                    className="text-red-500 text-2xl"
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    size="lg"
-                    className="text-gray-700 text-2xl"
-                  />
-                )}
-              </button>
-            )}
-            <span>{post.likes ? post.likes.length : 0} Likes</span>
+          <div className="text-gray-700 break-words">{post.text}</div>
+          <div className="flex items-center mt-4">
+            <button onClick={() => handleLike(post.id)} className="mr-2">
+              <FontAwesomeIcon
+                icon={faHeart}
+                className={`text-xl ${
+                  post.likes?.includes(currentUser.uid)
+                    ? "text-red-500"
+                    : "text-gray-400"
+                }`}
+              />
+            </button>
+            <span>{post.likes?.length || 0} Likes</span>
           </div>
-          {currentUser && (
-            <div className="mt-4">
-              <textarea
-                value={commentTexts[post.id] || ""}
-                onChange={(e) => handleCommentChange(post.id, e)}
-                className="w-full p-2 border border-gray-300 rounded mb-2"
-                placeholder="Add a comment"
-              ></textarea>
-              <button
-                onClick={() => handleAddComment(post.id)}
-                className="bg-gray-400 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Add a Comment <FontAwesomeIcon icon={faComment} />
-              </button>
-            </div>
-          )}
+
+          {/* Comment Section */}
           <div className="mt-4">
-            <h3 className="text-lg font-bold mb-2">Comments</h3>
+            <textarea
+              value={commentTexts[post.id] || ""}
+              onChange={(event) => handleCommentChange(post.id, event)}
+              className="border rounded w-full p-2 mb-2"
+              placeholder="Add a comment"
+            ></textarea>
+            <button
+              onClick={() => handleAddComment(post.id)}
+              className="bg-gray-400 text-white p-2 rounded hover:bg-blue-600"
+            >
+              Add a Comment <FontAwesomeIcon icon={faComment} />
+            </button>
+          </div>
+          <div className="mt-4">
             {comments[post.id] && comments[post.id].length > 0 ? (
               comments[post.id].map((comment) => (
                 <div
@@ -234,13 +276,23 @@ export default function Posts() {
                     alt="Profile"
                     className="w-8 h-8 rounded-full mr-2 mt-4"
                   />
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-semibold mt-4">
                       {comment.displayName} -{" "}
                       {comment.createdAt.toDate().toLocaleDateString()}
                     </p>
                     <p className="text-gray-700 break-words">{comment.text}</p>
                   </div>
+                  {currentUser &&
+                    (currentUser.uid === comment.userId ||
+                      currentUser.uid === post.userId) && (
+                      <button
+                        onClick={() => handleDeleteComment(post.id, comment.id)} // Calls handleDeleteComment
+                        className="text-black hover:text-red-500  mr-3 mt-3"
+                      >
+                        X {/* Replaced trash icon with "X" */}
+                      </button>
+                    )}
                 </div>
               ))
             ) : (
@@ -249,6 +301,36 @@ export default function Posts() {
           </div>
         </article>
       ))}
+
+      {/* Full-Screen Modal */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50"
+          onClick={closeModal} // Close the modal on background click
+        >
+          <img
+            src={selectedImage}
+            alt="Full Screen"
+            className="max-h-full max-w-full object-contain"
+            onClick={(e) => e.stopPropagation()} // Prevent click on image from closing the modal
+          />
+          <button
+            onClick={closeModal}
+            className="absolute top-5 right-10 text-white text-2xl"
+          >
+            X
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isConfirmationOpen}
+        onClose={() => setIsConfirmationOpen(false)}
+        onConfirm={confirmDelete}
+        itemType={itemToDelete.type}
+      />
+
       <div className="flex justify-between mt-4">
         <button
           onClick={prevPage}
